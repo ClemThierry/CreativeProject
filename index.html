@@ -13,14 +13,24 @@
 </head>
 
 <body>
-    <h1>SketchRNN</h1>
-    <p id="status">Loading Model...</p>
-    <p><button id="clear">Clear</button></p>
+    <h1>Let's play together</h1>
+    <!-- <p id="status">Loading Model...</p>
+    <p><button id="clear">Clear</button></p> -->
+    <form>
+        <label for="model">Find what it is : </label>
+        <input type="text" name="model" id="model">
+        <button id="validation">OK</button>
+    </form>
+    <div id="score">
+        <p id="scorePlayer">You : </p>
+        <p id="scoreComputer">Computer : </p>
+    </div>
+
 </body>
 
+<script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
 <script src="./lib/dat.gui.min.js"></script>
 <script src="./lib/p5.min.js"></script>
-<script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
 <script src="./build/build.js"></script>
 
 </html>
