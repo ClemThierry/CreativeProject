@@ -1,10 +1,10 @@
-## CreativeProject
+# CreativeProject
 
-#Fait
--L'IA peut dessiner
--Le joueur peut deviner
+##Fait
+- L'IA peut dessiner
+- Le joueur peut deviner
 
-# A Faire :
+## A Faire :
 - Ajouter le fait que le joueur puisse dessiner 1 fois sur 2
 - Afficher le mot que le joueur doit dessiner  
 - Ajouter la détection de l'image par l'IA
