@@ -1,6 +1,6 @@
 # CreativeProject
 
-##Fait
+## Fait
 - L'IA peut dessiner
 - Le joueur peut deviner
 
