@@ -76,3 +76,30 @@ main button:hover {
 #score {
     text-align: center;
 }
+
+footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    transition-duration: 0.4s;
+}
+
+footer div:nth-child(2) {
+    background-color: rgb(255, 255, 255);
+    padding: 20px;
+}
+
+#about {
+    background-color: white;
+    max-width: 15%;
+    padding: 5px;
+    margin: auto;
+    text-align: center;
+    border-radius: 10px 10px 0 0;
+}
+
+.translate {
+    transform: translateY(86%);
+}
