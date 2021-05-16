@@ -102,6 +102,11 @@ footer div:nth-child(2) {
     border-radius: 10px 10px 0 0;
 }
 
+#about:hover {
+    background-color: rgb(0, 0, 0);
+    color: white;
+}
+
 .translate {
     transform: translateY(-85%);
 }
