@@ -79,7 +79,7 @@ main button:hover {
 
 footer {
     position: absolute;
-    bottom: 0;
+    bottom: -230px;
     left: 0;
     right: 0;
     margin: 0;
@@ -89,6 +89,7 @@ footer {
 footer div:nth-child(2) {
     background-color: rgb(255, 255, 255);
     padding: 20px;
+    height: 188px;
 }
 
 #about {
@@ -101,5 +102,5 @@ footer div:nth-child(2) {
 }
 
 .translate {
-    transform: translateY(86%);
+    transform: translateY(-85%);
 }
