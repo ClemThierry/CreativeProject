@@ -24,7 +24,6 @@ const modelsToDraw = [
   'chair',
   'couch',
   'crab',
-  'crabchair',
   'dog',
   'dogbunny',
   'dolphin',
@@ -162,7 +161,6 @@ function startDrawing() {
   modelSketchRNN.reset();
   // Generate the first stroke path
   modelSketchRNN.generate(gotStroke);
-  console.log(object);
 }
 
 function draw() {
@@ -204,7 +202,6 @@ function playerTurn() {
   playerAI = !playerAI;
   clearCanvas();
   object = pickRandomDrawing();
-  console.log(playerAI);
   if (playerAI) {
     modelSketchRNN = ml5.sketchRNN(object);
     setTimeout(startDrawing, 3000);
