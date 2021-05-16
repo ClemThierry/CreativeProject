@@ -292,4 +292,4 @@ function endGame() {
 
   document.querySelector("#about").addEventListener("click", function () {
     document.querySelector("footer").classList.toggle("translate");
-  });
+  }, false);
