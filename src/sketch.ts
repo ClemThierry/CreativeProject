@@ -1,11 +1,9 @@
 // The SketchRNN model
 let modelSketchRNN;
 const modelsToDraw = [
-  'alarm_clock',
   'ambulance',
   'angel',
   'ant',
-  'antyoga',
   'backpack',
   'barn',
   'basket',
@@ -27,15 +25,11 @@ const modelsToDraw = [
   'couch',
   'crab',
   'crabchair',
-  'crabrabbitfacepig',
-  'cruise_ship',
-  'diving_board',
   'dog',
   'dogbunny',
   'dolphin',
   'duck',
   'elephant',
-  'elephantpig',
   'eye',
   'face',
   'fan',
@@ -43,7 +37,6 @@ const modelsToDraw = [
   'flamingo',
   'flower',
   'frog',
-  'frogsofa',
   'garden',
   'hand',
   'hedgeberry',
@@ -54,7 +47,6 @@ const modelsToDraw = [
   'lantern',
   'lighthouse',
   'lion',
-  'lionsheep',
   'lobster',
   'map',
   'mermaid',
@@ -69,14 +61,11 @@ const modelsToDraw = [
   'peas',
   'penguin',
   'pig',
-  'pigsheep',
   'pineapple',
   'pool',
   'postcard',
   'rabbit',
-  'rabbitturtle',
   'radio',
-  'radioface',
   'rain',
   'rhinoceros',
   'rifle',
@@ -94,7 +83,6 @@ const modelsToDraw = [
   'stove',
   'strawberry',
   'swan',
-  'swing_set',
   'tiger',
   'toothbrush',
   'toothpaste',
@@ -104,8 +92,6 @@ const modelsToDraw = [
   'whale',
   'windmill',
   'yoga',
-  'yogabicycle',
-  'everything',
 ];
 let object = modelsToDraw[Math.floor(Math.random() * modelsToDraw.length)];
 
@@ -123,6 +109,7 @@ let canvas;
 let scorePlayer = 0;
 let scoreComputer = 0;
 let playerAI = true;
+let guessTry = 0;
 
 function pickRandomDrawing() {
   object = modelsToDraw[Math.floor(Math.random() * modelsToDraw.length)];
@@ -143,11 +130,6 @@ function setup() {
   divBouton.id('boutons');
   divBouton.parent(document.querySelector('main'));
 
-  // Button to reset drawing
-  const replayButton = createButton("Replay");
-  replayButton.parent('boutons');
-  replayButton.mousePressed(startDrawing);
-
   const clearButton = createButton("Clear");
   clearButton.parent('boutons');
   clearButton.mousePressed(clearCanvas);
@@ -158,7 +140,9 @@ function setup() {
 }
 
 function clearCanvas() {
-  background(255);
+  if (!playerAI) {
+  background(255);    
+  }
 }
 
 function modelDoodleReady() {
@@ -220,16 +204,19 @@ function playerTurn() {
   playerAI = !playerAI;
   clearCanvas();
   object = pickRandomDrawing();
+  console.log(playerAI);
   if (playerAI) {
     modelSketchRNN = ml5.sketchRNN(object);
+    setTimeout(startDrawing, 3000);
   } else {
     alert("It's your turn ! Draw : " + object);
   }
 }
 
 function guess() {
-  console.log("l'ordinateur suppose");
-  modelDoodle.classify(canvas, gotResults);
+  if (!playerAI) {
+  modelDoodle.classify(canvas, gotResults);    
+  }
 }
 
 function gotResults(error, results) {
@@ -237,39 +224,56 @@ function gotResults(error, results) {
     console.log(error);
     return;
   }
-  console.log("2e fonction appelée");
   document.querySelector("#model").value = results[0].label;
   response();
 }
 
+
 function response() {
   let word = document.querySelector("#model").value;
+  guessTry +=1;
 
   if (playerAI) {
     let score = document.querySelector("#scorePlayer");
     if (object == word) {
+      guessTry =0;
       document.querySelector("#model").style.backgroundColor = "green";
       scorePlayer += 1;
       score.innerHTML = "Player : " + scorePlayer;
-      playerTurn();
+      endGame();
     } else {
       document.querySelector("#model").style.backgroundColor = "red";
     }
   } else {
     let score = document.querySelector("#scoreComputer");
     if (object == word) {
+      guessTry=0;
       document.querySelector("#model").style.backgroundColor = "green";
       scoreComputer += 1;
       score.innerHTML = "Computer : " + scoreComputer;
-      //prochain tour
-      playerTurn();
-
-      //Créer une fonction pour changer le dessin (object)
-      //changement de dessin    
-      // modelSketchRNN = ml5.sketchRNN(pickRandomDrawing());
+      endGame();
     } else {
       document.querySelector("#model").style.backgroundColor = "red";
     }
+  }
+
+  if (guessTry == 3) {
+    alert("To much try");
+    endGame();
+  }
+}
+
+function endGame() {
+  if (scoreComputer== 5 || scorePlayer == 5) {
+    if (scorePlayer >= scoreComputer) {
+      alert("Congratulation you win !");
+    }else{
+      alert("Sorry you loose :(");
+    }
+    scorePlayer = scoreComputer = 0;
+    document.location.reload();
+  }else{
+    playerTurn();
   }
 }
 
