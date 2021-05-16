@@ -290,4 +290,6 @@ function endGame() {
     startDrawing();
   }, false);
 
-
+  document.querySelector("#about").addEventListener("click", function () {
+    document.querySelector("footer").classList.toggle("translate");
+  });
