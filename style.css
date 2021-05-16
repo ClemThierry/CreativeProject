@@ -1,0 +1,107 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-size: cover;
+    background-image: linear-gradient(rgba(255, 255, 255, 0.7), rgba(0, 234, 255, 0.5)), url("./src/back.jpg");
+    overflow: hidden;
+}
+
+body>* {
+    margin-bottom: 20px;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+}
+
+main>* {
+    margin: auto;
+}
+
+.p5Canvas {
+    z-index: -1;
+    border: 20px black solid;
+    border-radius: 15px;
+}
+
+h1 {
+    text-shadow: 1px 0px 7px rgb(255, 255, 255);
+}
+
+#play {
+    padding: 50px;
+    border-radius: 60px;
+    position: absolute;
+    color: white;
+    background: rgb(0, 170, 185);
+    border: none;
+    top: 40vh;
+    font-size: 3em;
+    -webkit-box-shadow: 0px 10px 13px -7px #000000, 0px 10px 10px 14px rgba(0, 0, 0, 0.37);
+    box-shadow: 0px 10px 13px -7px #000000, 0px 10px 10px 14px rgba(0, 0, 0, 0.37);
+    transition-duration: 0.4s;
+}
+
+#play:hover {
+    background: rgb(0, 97, 105);
+    -webkit-box-shadow: inset 4px 4px 15px 0px #000000, -1px 1px 17px 11px rgba(0, 0, 0, 0);
+    box-shadow: inset 4px 4px 15px 0px #000000, -1px 1px 17px 11px rgba(0, 0, 0, 0);
+}
+
+main>* {
+    font-size: 1em;
+}
+
+main button {
+    margin: 10px;
+    background: rgb(255, 255, 255);
+    color: black;
+    padding: 10px;
+    border: rgba(0, 0, 0, 0.8) solid 2px;
+    border-radius: 10px;
+    box-shadow: -1px 19px 42px 7px rgba(0, 0, 0, 0.51);
+    -webkit-box-shadow: -1px 19px 42px 7px rgba(0, 0, 0, 0.51);
+    -moz-box-shadow: -1px 19px 42px 7px rgba(0, 0, 0, 0.51);
+}
+
+main button:hover {
+    color: white;
+    background: rgb(0, 97, 105);
+    -webkit-box-shadow: inset 4px 4px 15px 0px #000000, -1px 1px 17px 11px rgba(0, 0, 0, 0);
+    box-shadow: inset 4px 4px 15px 0px #000000, -1px 1px 17px 11px rgba(0, 0, 0, 0);
+}
+
+#score {
+    text-align: center;
+}
+
+footer {
+    position: absolute;
+    bottom: -230px;
+    left: 0;
+    right: 0;
+    margin: 0;
+    transition-duration: 0.4s;
+}
+
+footer div:nth-child(2) {
+    background-color: rgb(255, 255, 255);
+    padding: 20px;
+    height: 188px;
+}
+
+#about {
+    background-color: white;
+    max-width: 15%;
+    padding: 5px;
+    margin: auto;
+    text-align: center;
+    border-radius: 10px 10px 0 0;
+}
+
+.translate {
+    transform: translateY(-85%);
+}
