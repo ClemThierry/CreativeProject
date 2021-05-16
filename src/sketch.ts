@@ -11,7 +11,6 @@ const modelsToDraw = [
   'basket',
   'bear',
   'bee',
-  'beeflower',
   'bicycle',
   'bird',
   'book',
@@ -24,8 +23,6 @@ const modelsToDraw = [
   'calendar',
   'castle',
   'cat',
-  'catbus',
-  'catpig',
   'chair',
   'couch',
   'crab',
@@ -42,11 +39,9 @@ const modelsToDraw = [
   'eye',
   'face',
   'fan',
-  'fire_hydrant',
   'firetruck',
   'flamingo',
   'flower',
-  'floweryoga',
   'frog',
   'frogsofa',
   'garden',
@@ -69,7 +64,6 @@ const modelsToDraw = [
   'octopus',
   'owl',
   'paintbrush',
-  'palm_tree',
   'parrot',
   'passport',
   'peas',
@@ -79,7 +73,6 @@ const modelsToDraw = [
   'pineapple',
   'pool',
   'postcard',
-  'power_outlet',
   'rabbit',
   'rabbitturtle',
   'radio',
@@ -87,7 +80,6 @@ const modelsToDraw = [
   'rain',
   'rhinoceros',
   'rifle',
-  'roller_coaster',
   'sandwich',
   'scorpion',
   'sea_turtle',
@@ -103,7 +95,6 @@ const modelsToDraw = [
   'strawberry',
   'swan',
   'swing_set',
-  'the_mona_lisa',
   'tiger',
   'toothbrush',
   'toothpaste',
@@ -129,9 +120,9 @@ let x, y;
 let strokePath;
 let canvas;
 
-let scorePlayer = 0:
-  let scoreAI = 0;
-let player = 0;
+let scorePlayer = 0;
+let scoreComputer = 0;
+let playerAI = true;
 
 function pickRandomDrawing() {
   object = modelsToDraw[Math.floor(Math.random() * modelsToDraw.length)];
@@ -143,8 +134,6 @@ function preload() {
   modelSketchRNN = ml5.sketchRNN(object);
   modelDoodle = ml5.imageClassifier('DoodleNet', modelDoodleReady);
 }
-
-// console.log('ml5 version:', ml5.version);
 
 function setup() {
   canvas = createCanvas(500, 500);
@@ -177,7 +166,6 @@ function modelDoodleReady() {
 }
 
 function modelReady() {
-  console.log("model loaded");
   startDrawing();
 }
 
@@ -185,7 +173,7 @@ function modelReady() {
 function startDrawing() {
   background(255);
   // Start in the middle
-  x = width / 3;
+  x = width / 2;
   y = height / 2;
   modelSketchRNN.reset();
   // Generate the first stroke path
@@ -196,12 +184,11 @@ function startDrawing() {
 function draw() {
   stroke(0);
   strokeWeight(16);
-  if (player == 0) {
+  if (playerAI) {
     // If something new to draw
     if (strokePath) {
       // If the pen is down, draw a line
       if (previousPen === "down") {
-
         line(x, y, x + strokePath.dx, y + strokePath.dy);
       }
       // Move the pen
@@ -218,9 +205,9 @@ function draw() {
     }
   } else {
     if (mouseIsPressed) {
+      strokeWeight(25);
       line(mouseX, mouseY, pmouseX, pmouseY);
     }
-
   }
 }
 
@@ -230,57 +217,76 @@ function gotStroke(err, s) {
 }
 
 function playerTurn() {
+  playerAI = !playerAI;
+  clearCanvas();
   object = pickRandomDrawing();
-  alert("It's your turn ! Draw : " + object);
-
+  if (playerAI) {
+    modelSketchRNN = ml5.sketchRNN(object);
+  } else {
+    alert("It's your turn ! Draw : " + object);
+  }
 }
 
 function guess() {
   console.log("l'ordinateur suppose");
-  doodleClassifier.classify(canvas, gotResults);
+  modelDoodle.classify(canvas, gotResults);
 }
 
 function gotResults(error, results) {
-  // if (error) {
-  //   console.log(error);
-  //   return;
-  // }
+  if (error) {
+    console.log(error);
+    return;
+  }
   console.log("2e fonction appelée");
-  console.log(results[0].label);
+  document.querySelector("#model").value = results[0].label;
+  response();
 }
 
-document.querySelector("#validation").addEventListener("click", function (event) {
-  event.preventDefault();
+function response() {
   let word = document.querySelector("#model").value;
-  let score = document.querySelector("#scorePlayer");
-  if (object == word) {
-    document.querySelector("#model").style.backgroundColor = "green";
-    scorePlayer += 1;
-    score.innerHTML = "You : " + scorePlayer;
 
-    //prochain tour
-    player = 1;
-    clearCanvas();
-    playerTurn();
-    //Créer une fonction pour changer le dessin (object)
-    //changement de dessin    
-    // modelSketchRNN = ml5.sketchRNN(pickRandomDrawing());
+  if (playerAI) {
+    let score = document.querySelector("#scorePlayer");
+    if (object == word) {
+      document.querySelector("#model").style.backgroundColor = "green";
+      scorePlayer += 1;
+      score.innerHTML = "Player : " + scorePlayer;
+      playerTurn();
+    } else {
+      document.querySelector("#model").style.backgroundColor = "red";
+    }
   } else {
-    document.querySelector("#model").style.backgroundColor = "red";
+    let score = document.querySelector("#scoreComputer");
+    if (object == word) {
+      document.querySelector("#model").style.backgroundColor = "green";
+      scoreComputer += 1;
+      score.innerHTML = "Computer : " + scoreComputer;
+      //prochain tour
+      playerTurn();
+
+      //Créer une fonction pour changer le dessin (object)
+      //changement de dessin    
+      // modelSketchRNN = ml5.sketchRNN(pickRandomDrawing());
+    } else {
+      document.querySelector("#model").style.backgroundColor = "red";
+    }
   }
+}
 
-}, false);
+  document.querySelector("#validation").addEventListener("click", function (event) {
+    event.preventDefault();
+    response();
+  }, false);
 
-document.querySelector("#model").addEventListener("click", function () {
-  this.style.backgroundColor = "white";
-})
+  document.querySelector("#model").addEventListener("click", function () {
+    this.style.backgroundColor = "white";
+  })
 
-document.querySelector("#play").addEventListener("click", function (event) {
-  event.preventDefault();
-  this.style.display = "none";
-  document.querySelector("main").removeAttribute("style");
-  // run sketchRNN
-  startDrawing();
-}, false);
+  document.querySelector("#play").addEventListener("click", function (event) {
+    event.preventDefault();
+    this.style.display = "none";
+    document.querySelector("main").removeAttribute("style");
+    startDrawing();
+  }, false);
 
 
