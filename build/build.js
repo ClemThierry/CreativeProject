@@ -1,21 +1,13 @@
-var gui = new dat.GUI();
-var params = {
-    Download_Image: function () { return save(); },
-};
-gui.add(params, "Download_Image");
-var model;
+var modelSketchRNN;
 var modelsToDraw = [
-    'alarm_clock',
     'ambulance',
     'angel',
     'ant',
-    'antyoga',
     'backpack',
     'barn',
     'basket',
     'bear',
     'bee',
-    'beeflower',
     'bicycle',
     'bird',
     'book',
@@ -28,31 +20,20 @@ var modelsToDraw = [
     'calendar',
     'castle',
     'cat',
-    'catbus',
-    'catpig',
     'chair',
     'couch',
     'crab',
-    'crabchair',
-    'crabrabbitfacepig',
-    'cruise_ship',
-    'diving_board',
     'dog',
-    'dogbunny',
     'dolphin',
     'duck',
     'elephant',
-    'elephantpig',
     'eye',
     'face',
     'fan',
-    'fire_hydrant',
     'firetruck',
     'flamingo',
     'flower',
-    'floweryoga',
     'frog',
-    'frogsofa',
     'garden',
     'hand',
     'hedgeberry',
@@ -63,7 +44,6 @@ var modelsToDraw = [
     'lantern',
     'lighthouse',
     'lion',
-    'lionsheep',
     'lobster',
     'map',
     'mermaid',
@@ -73,25 +53,19 @@ var modelsToDraw = [
     'octopus',
     'owl',
     'paintbrush',
-    'palm_tree',
     'parrot',
     'passport',
     'peas',
     'penguin',
     'pig',
-    'pigsheep',
     'pineapple',
     'pool',
     'postcard',
-    'power_outlet',
     'rabbit',
-    'rabbitturtle',
     'radio',
-    'radioface',
     'rain',
     'rhinoceros',
     'rifle',
-    'roller_coaster',
     'sandwich',
     'scorpion',
     'sea_turtle',
@@ -106,8 +80,6 @@ var modelsToDraw = [
     'stove',
     'strawberry',
     'swan',
-    'swing_set',
-    'the_mona_lisa',
     'tiger',
     'toothbrush',
     'toothpaste',
@@ -117,70 +89,175 @@ var modelsToDraw = [
     'whale',
     'windmill',
     'yoga',
-    'yogabicycle',
-    'everything',
 ];
 var object = modelsToDraw[Math.floor(Math.random() * modelsToDraw.length)];
+var modelDoodle;
 var previousPen = "down";
 var x, y;
 var strokePath;
+var canvas;
+var scorePlayer = 0;
+var scoreComputer = 0;
+var playerAI = true;
+var guessTry = 0;
 function pickRandomDrawing() {
     object = modelsToDraw[Math.floor(Math.random() * modelsToDraw.length)];
     return object;
 }
 function preload() {
-    model = ml5.sketchRNN(object);
+    modelSketchRNN = ml5.sketchRNN(object);
+    modelDoodle = ml5.imageClassifier('DoodleNet', modelDoodleReady);
 }
-console.log('ml5 version:', ml5.version);
 function setup() {
-    createCanvas(640, 480);
-    background(220);
-    var button = createButton("Replay");
-    button.mousePressed(startDrawing);
-    startDrawing();
+    canvas = createCanvas(500, 500);
+    background(255);
+    var divBouton = createDiv();
+    divBouton.id('boutons');
+    divBouton.parent(document.querySelector('main'));
+    var clearButton = createButton("Clear");
+    clearButton.parent('boutons');
+    clearButton.mousePressed(clearCanvas);
+    var finishButton = createButton("Finish");
+    finishButton.parent('boutons');
+    finishButton.mousePressed(guess);
+}
+function clearCanvas() {
+    if (!playerAI) {
+        background(255);
+    }
+}
+function modelDoodleReady() {
+    console.log("Doodlemodel loaded");
 }
 function modelReady() {
-    console.log("model loaded");
     startDrawing();
 }
 function startDrawing() {
-    background(220);
+    background(255);
     x = width / 2;
     y = height / 2;
-    model.reset();
-    model.generate(gotStroke);
+    modelSketchRNN.reset();
+    modelSketchRNN.generate(gotStroke);
     console.log(object);
 }
 function draw() {
-    if (strokePath) {
-        if (previousPen === "down") {
-            stroke(0);
-            strokeWeight(3.0);
-            line(x, y, x + strokePath.dx, y + strokePath.dy);
+    stroke(0);
+    strokeWeight(16);
+    if (playerAI) {
+        if (strokePath) {
+            if (previousPen === "down") {
+                line(x, y, x + strokePath.dx, y + strokePath.dy);
+            }
+            x += strokePath.dx;
+            y += strokePath.dy;
+            previousPen = strokePath.pen;
+            if (strokePath.pen !== "end") {
+                strokePath = null;
+                modelSketchRNN.generate(gotStroke);
+            }
         }
-        x += strokePath.dx;
-        y += strokePath.dy;
-        previousPen = strokePath.pen;
-        if (strokePath.pen !== "end") {
-            strokePath = null;
-            model.generate(gotStroke);
+    }
+    else {
+        if (mouseIsPressed) {
+            strokeWeight(25);
+            line(mouseX, mouseY, pmouseX, pmouseY);
         }
     }
 }
 function gotStroke(err, s) {
     strokePath = s;
 }
-var scorePlayer = 0, let, scoreAI = 0;
+function playerTurn() {
+    playerAI = !playerAI;
+    clearCanvas();
+    object = pickRandomDrawing();
+    console.log(playerAI);
+    if (playerAI) {
+        modelSketchRNN = ml5.sketchRNN(object);
+        setTimeout(startDrawing, 3000);
+    }
+    else {
+        alert("It's your turn ! Draw : " + object);
+    }
+}
+function guess() {
+    if (!playerAI) {
+        modelDoodle.classify(canvas, gotResults);
+    }
+}
+function gotResults(error, results) {
+    if (error) {
+        console.log(error);
+        return;
+    }
+    document.querySelector("#model").value = results[0].label;
+    response();
+}
+function response() {
+    var word = document.querySelector("#model").value;
+    guessTry += 1;
+    if (playerAI) {
+        var score = document.querySelector("#scorePlayer");
+        if (object == word) {
+            guessTry = 0;
+            document.querySelector("#model").style.backgroundColor = "green";
+            scorePlayer += 1;
+            score.innerHTML = "Player : " + scorePlayer;
+            endGame();
+        }
+        else {
+            document.querySelector("#model").style.backgroundColor = "red";
+        }
+    }
+    else {
+        var score = document.querySelector("#scoreComputer");
+        if (object == word) {
+            guessTry = 0;
+            document.querySelector("#model").style.backgroundColor = "green";
+            scoreComputer += 1;
+            score.innerHTML = "Computer : " + scoreComputer;
+            endGame();
+        }
+        else {
+            document.querySelector("#model").style.backgroundColor = "red";
+        }
+    }
+    if (guessTry == 3) {
+        alert("To much try");
+        endGame();
+    }
+}
+function endGame() {
+    if (scoreComputer == 5 || scorePlayer == 5) {
+        if (scorePlayer >= scoreComputer) {
+            alert("Congratulation you win !");
+        }
+        else {
+            alert("Sorry you loose :(");
+        }
+        scorePlayer = scoreComputer = 0;
+        document.location.reload();
+    }
+    else {
+        playerTurn();
+    }
+}
 document.querySelector("#validation").addEventListener("click", function (event) {
     event.preventDefault();
-    var word = document.querySelector("#model").value;
-    var score = document.querySelector("#scorePlayer");
-    if (object == word) {
-        scorePlayer += 1;
-        score.innerHTML = "You : " + scorePlayer;
-        model = ml5.sketchRNN(pickRandomDrawing());
-    }
+    response();
 }, false);
+document.querySelector("#model").addEventListener("click", function () {
+    this.style.backgroundColor = "white";
+});
+document.querySelector("#play").addEventListener("click", function (event) {
+    event.preventDefault();
+    this.style.display = "none";
+    document.querySelector("main").removeAttribute("style");
+    startDrawing();
+}, false);
+document.querySelector("#about").addEventListener("click", function () {
+    document.querySelector("footer").classList.toggle("translate");
+});
 var __ASPECT_RATIO = 1;
 var __MARGIN_SIZE = 25;
 function __desiredCanvasWidth() {
