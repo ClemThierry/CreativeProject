@@ -151,14 +151,11 @@ function modelReady() {
   startDrawing();
 }
 
-// Reset the drawing
 function startDrawing() {
   background(255);
-  // Start in the middle
   x = width / 2;
   y = height / 2;
   modelSketchRNN.reset();
-  // Generate the first stroke path
   modelSketchRNN.generate(gotStroke);
   console.log(object);
 }
@@ -260,12 +257,6 @@ function response() {
   }
 }
 
-  if (guessTry == 3) {
-    alert("To much try");
-    endGame();
-  }
-}
-
 function endGame() {
   if (scoreComputer== 5 || scorePlayer == 5) {
     if (scorePlayer >= scoreComputer) {
@@ -292,7 +283,9 @@ function endGame() {
   document.querySelector("#play").addEventListener("click", function (event) {
     event.preventDefault();
     this.style.display = "none";
+    document.querySelector("#rules").style.display = "none";
     document.querySelector("main").removeAttribute("style");
+    document.querySelector("footer").classList.toggle("translate");
     startDrawing();
   }, false);
 
