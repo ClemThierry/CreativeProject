@@ -102,19 +102,23 @@ let previousPen = "down";
 let x, y;
 // The current "stroke" of the drawing
 let strokePath;
-let canvas;
 
+
+let canvas;
 let scorePlayer = 0;
 let scoreComputer = 0;
+//Boolean to know who is drawing
 let playerAI = true;
+//Count of try to guess
 let guessTry = 0;
 
+//pick a random model to draw for the computer or the user
 function pickRandomDrawing() {
   object = modelsToDraw[Math.floor(Math.random() * modelsToDraw.length)];
   return object;
 }
 
-// For when SketchRNN is fixed
+// For when SketchRNN and DoodleNet is fixed
 function preload() {
   modelSketchRNN = ml5.sketchRNN(object);
   modelDoodle = ml5.imageClassifier('DoodleNet', modelDoodleReady);
@@ -151,6 +155,7 @@ function modelReady() {
   startDrawing();
 }
 
+//To call SketchRNN to draw
 function startDrawing() {
   background(255);
   x = width / 2;
@@ -163,7 +168,7 @@ function startDrawing() {
 function draw() {
   stroke(0);
   strokeWeight(16);
-  if (playerAI) {
+  if (playerAI) { //if it's computer turn
     // If something new to draw
     if (strokePath) {
       // If the pen is down, draw a line
@@ -182,7 +187,7 @@ function draw() {
         modelSketchRNN.generate(gotStroke);
       }
     }
-  } else {
+  } else { // it's the user turn
     if (mouseIsPressed) {
       strokeWeight(25);
       line(mouseX, mouseY, pmouseX, pmouseY);
@@ -195,25 +200,27 @@ function gotStroke(err, s) {
   strokePath = s;
 }
 
+//alternate turn
 function playerTurn() {
   playerAI = !playerAI;
   clearCanvas();
   object = pickRandomDrawing();
-  console.log(playerAI);
   if (playerAI) {
     modelSketchRNN = ml5.sketchRNN(object);
-    setTimeout(startDrawing, 3000);
+    setTimeout(startDrawing, 3000); //delay to let SketchRNN time to load
   } else {
     alert("It's your turn ! Draw : " + object);
   }
 }
 
+//Guess of the computer (DoodleNet)
 function guess() {
   if (!playerAI) {
   modelDoodle.classify(canvas, gotResults);    
   }
 }
 
+//Write its guess in the form
 function gotResults(error, results) {
   if (error) {
     console.log(error);
@@ -223,7 +230,7 @@ function gotResults(error, results) {
   response();
 }
 
-
+//Verification of the guess
 function response() {
   let word = document.querySelector("#model").value;
   guessTry +=1;
@@ -257,6 +264,7 @@ function response() {
   }
 }
 
+//test if the game is end
 function endGame() {
   if (scoreComputer== 5 || scorePlayer == 5) {
     if (scorePlayer >= scoreComputer) {
@@ -271,6 +279,7 @@ function endGame() {
   }
 }
 
+//Others functions
   document.querySelector("#validation").addEventListener("click", function (event) {
     event.preventDefault();
     response();
