@@ -151,14 +151,11 @@ function modelReady() {
   startDrawing();
 }
 
-// Reset the drawing
 function startDrawing() {
   background(255);
-  // Start in the middle
   x = width / 2;
   y = height / 2;
   modelSketchRNN.reset();
-  // Generate the first stroke path
   modelSketchRNN.generate(gotStroke);
   console.log(object);
 }
@@ -230,34 +227,33 @@ function gotResults(error, results) {
 function response() {
   let word = document.querySelector("#model").value;
   guessTry +=1;
-
-  if (playerAI) {
-    let score = document.querySelector("#scorePlayer");
-    if (object == word) {
-      guessTry =0;
-      document.querySelector("#model").style.backgroundColor = "green";
-      scorePlayer += 1;
-      score.innerHTML = "Player : " + scorePlayer;
-      endGame();
-    } else {
-      document.querySelector("#model").style.backgroundColor = "red";
-    }
-  } else {
-    let score = document.querySelector("#scoreComputer");
-    if (object == word) {
-      guessTry=0;
-      document.querySelector("#model").style.backgroundColor = "green";
-      scoreComputer += 1;
-      score.innerHTML = "Computer : " + scoreComputer;
-      endGame();
-    } else {
-      document.querySelector("#model").style.backgroundColor = "red";
-    }
-  }
-
-  if (guessTry == 3) {
+  if (guessTry == 4) {
     alert("To much try");
     endGame();
+  }else{
+    if (playerAI) {
+      let score = document.querySelector("#scorePlayer");
+      if (object == word) {
+        guessTry=0;
+        document.querySelector("#model").style.backgroundColor = "green";
+        scorePlayer += 1;
+        score.innerHTML = "Player : " + scorePlayer;
+        endGame();
+      } else {
+        document.querySelector("#model").style.backgroundColor = "red";
+      }
+    } else {
+      let score = document.querySelector("#scoreComputer");
+      if (object == word) {
+        guessTry=0;
+        document.querySelector("#model").style.backgroundColor = "green";
+        scoreComputer += 1;
+        score.innerHTML = "Computer : " + scoreComputer;
+        endGame();
+      } else {
+        document.querySelector("#model").style.backgroundColor = "red";
+      }
+    }
   }
 }
 
@@ -287,7 +283,9 @@ function endGame() {
   document.querySelector("#play").addEventListener("click", function (event) {
     event.preventDefault();
     this.style.display = "none";
+    document.querySelector("#rules").style.display = "none";
     document.querySelector("main").removeAttribute("style");
+    document.querySelector("footer").classList.toggle("translate");
     startDrawing();
   }, false);
 
